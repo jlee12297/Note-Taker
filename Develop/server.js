@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { clog } = require('../middleware/clog');
 const { readFromFile, readAndAppend } = require('../helpers/fsUtils')
+const { v4: uuidv4 } = require('uuid');
 
 const PORT = process.env.PORT || 3001;
 
@@ -31,6 +32,25 @@ app.get('/notes', (req, res) =>
 app.get('/api/notes', (req, res) => {
   readFromFile(path.join(__dirname, "/db/db.json")).then((data) => res.json(JSON.parse(data)));
 });
+
+// POST Route to recieve a new note and add it to db.json, then return new note to the client
+app.post('/api/notes', (req, res) => {
+  console.log(req.body)
+  const { title, text } = req.body;
+
+  if (req.body) {
+    const newNote = {
+      title,
+      text,
+      noteId: uuidv4(),
+    };
+
+    readAndAppend(newNote, './db/db.json');
+    res.json('Note added successfully!!!')
+  } else {
+    res.error('Error in adding note...')
+  }
+})
 
 // GET Route to ensure even if "unknown" query parameter, then user is still brought to notetake index.html homepage
 app.get('*', (req, res)=>{
