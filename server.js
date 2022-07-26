@@ -1,8 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { clog } = require('../middleware/clog');
-const { readFromFile, readAndAppend } = require('../helpers/fsUtils')
+const { clog } = require('./middleware/clog');
+const { readFromFile, readAndAppend } = require('./helpers/fsUtils')
 const { v4: uuidv4 } = require('uuid');
 
 const PORT = process.env.PORT || 3001;
