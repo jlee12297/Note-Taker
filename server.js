@@ -4,6 +4,7 @@ const path = require('path');
 const { clog } = require('./middleware/clog');
 const { readFromFile, readAndAppend } = require('./helpers/fsUtils')
 const { v4: uuidv4 } = require('uuid');
+const { json } = require('express');
 
 const PORT = process.env.PORT || 3001;
 
@@ -50,6 +51,25 @@ app.post('/api/notes', (req, res) => {
   } else {
     res.error('Error in adding note...')
   }
+})
+
+// DELETE Route to delete note based on which note's button is clicked, delete it from db.json
+app.delete('/api/notes/:id', (req, res) => {
+  fs.readFile("./db/db.json", "utf8", (err, data) => {
+    if (err) {
+      throw err;
+    } else {
+      const notesList = JSON.parse(data);
+      const newNotes = notesList.filter(note => note.id !== req.params.id)
+      fs.writeFile(
+        "./db/db.json",
+        JSON.stringify(newNotes),
+        (err, data) => {
+          res.json("deleted successfully!")
+        })
+    } 
+  })
+ 
 })
 
 // GET Route to ensure even if "unknown" query parameter, then user is still brought to notetake index.html homepage
